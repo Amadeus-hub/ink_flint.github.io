@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            position: relative;
+            height: 100%;
+        }
+
+        .bj img {
+            width: 20px;
+            height: 40px;
+            position: absolute;
+            top: 0px;
+        }
+
+        .wsc {
+            position: absolute;
+            bottom: 0px;
+        }
+
+        .wsc p {
+            font-size: 40px;
+            position: absolute;
+            top: -30px;
+            left: 60px;
+            font-weight: bold;
+        }
+
+        .wsc img {
+            width: 70px;
+            height: 70px;
+        }
+
+        .score {
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .sccount {
+            width: 250px;
+            height: 150px;
+            position: absolute;
+            border: 4px solid black;
+            top: 50px;
+            left: 0;
+            right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+        }
+
+        .times {
+            position: absolute;
+            left: 0;
+            top: 40px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .sccount p {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .replay {
+            line-height: 30px;
+            margin: 50px auto auto 73px;
+            width: 100px;
+            height: 30px;
+            outline: none;
+            border: none;
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="score">当前分数:0分</div>
+    <div class="times">剩余时间30s</div>
+    <div class="bj"></div>
+    <div class="sccount">
+        <p></p>
+        <button class="replay">replay</button>
+    </div>
+    <div class="wsc"><img src="./wsc.jpg" alt="">
+    </div>
+</body>
+<script>
+    var sc = document.querySelector('.score');
+    var wsc = document.querySelector('.wsc');
+    var score = 0;
+    var height = window.innerHeight || document.documentElement.clientHeight;
+    var w = window.innerWidth || document.documentElement.clientWidth;
+    var img = document.querySelector('.bj img')
+    var bjdiv = document.querySelector('.bj');
+
+    creatObj(1, "./hotdog.jpg", 250);
+    creatObj(5, "./jiangbei.jpg", 1000);
+    
+    function creatObj(fenshu, src, time) {
+        var t1 = setInterval(function () {
+            var img = document.createElement('img');
+            img.src = src;
+            var left = Math.floor(Math.random() * (window.innerWidth - 20 + 1));
+            img.style.left = left + 'px';
+            img.style.top = '0px';
+            var num = 0;
+            img.style.transform = 'translateY(' + num + 'px)';
+            bjdiv.appendChild(img);
+            var t2 = setInterval(function () {
+                num += 3;
+                img.style.transform = 'translateY(' + num + 'px)';
+                if (num > height - 40) {
+                    bjdiv.removeChild(img);
+                    clearInterval(t2);
+                }
+                if (num + 100 > height && img.offsetLeft >= wsc.offsetLeft - 20 && img.offsetLeft <= wsc.offsetLeft + 60) {
+                    var p = document.createElement('p');
+                    p.innerHTML = '+' + fenshu + '';
+                    wsc.appendChild(p);
+                    setTimeout(function () {
+                        wsc.removeChild(p)
+                    }, 300)
+                    score += fenshu;
+                    sc.innerHTML = '当前分数:' + score + '分';
+                    bjdiv.removeChild(img);
+                    clearInterval(t2);
+                }
+            }, 10)
+        }, time)
+        setTimeout(function () {
+            clearInterval(t1);
+            t1 = null;
+        }, 30000)
+    }
+
+
+
+    function wscMove(evt) {
+        var e = evt || window.event;
+        wsc.style.left = e.clientX + 'px';
+        if (parseInt(wsc.style.left) >= w - 70) {
+            wsc.style.left = w - 70 + 'px';
+        }
+    }
+
+    document.addEventListener('mousemove', wscMove);
+    var sec = 30;
+    var t3 = setInterval(function () {
+        var time = document.querySelector('.times');
+        sec--;
+        time.innerHTML = '剩余时间' + sec + 's';
+        if (sec == 0) {
+            while (bjdiv.firstChild) {
+                bjdiv.removeChild(bjdiv.firstChild)
+            }
+            document.addEventListener('mousemove', function () {
+                var scdiv = document.querySelector('.sccount');
+                var scdiv_p = document.querySelector('.sccount p');
+                scdiv_p.innerHTML = sc.innerHTML + '&nbsp再来一局?';
+                scdiv.style.display = 'block';
+                clearInterval(t3);
+            })
+
+        }
+    }, 1000)
+    var rep = document.querySelector('button');
+    rep.addEventListener('click', function () {
+        location.reload();
+    })
+</script>
+
+</html>
